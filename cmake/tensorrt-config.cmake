@@ -2,12 +2,22 @@
 ## tensorrt specific configuration ##
 #####################################
 find_package(CUDA)
-find_library(NVINFER  NAMES nvinfer)
-find_library(NVINFERPLUGIN NAMES nvinfer_plugin)
-find_library(NVPARSERS NAMES nvparsers)
-find_library(NVONNXPARSER NAMES nvonnxparser)
-find_library(NVONNXPARSERRUNTIME NAMES nvonnxparser_runtime)
-
+set(TRT_LIB_PATH "/usr/lib/x86_64-linux-gnu")
+list(APPEND CMAKE_FIND_LIBRARY_SUFFIXES .so.0)
+list(APPEND CMAKE_FIND_LIBRARY_SUFFIXES .so.5)
+find_library(NVINFER  NAMES libnvinfer.so.5 HINTS "${TRT_LIB_PATH}")
+find_library(NVINFERPLUGIN NAMES nvinfer_plugin HINTS "${TRT_LIB_PATH}")
+find_library(NVPARSERS NAMES nvparsers HINTS "${TRT_LIB_PATH}")
+find_library(NVONNXPARSER NAMES nvonnxparser HINTS "${TRT_LIB_PATH}")
+find_library(NVONNXPARSERRUNTIME NAMES nvonnxparser_runtime HINTS "${TRT_LIB_PATH}")
+message("CUDA Libs: ${CUDA_LIBRARIES}")
+message("CUDA Headers: ${CUDA_INCLUDE_DIRS}")
+message("NVINFER: ${NVINFER}")
+message("NVINFERPLUGIN: ${NVINFERPLUGIN}")
+message("NVPARSERS: ${NVPARSERS}")
+message("NVONNXPARSER: ${NVONNXPARSER}")
+message("NVONNXPARSERRUNTIME: ${NVONNXPARSERRUNTIME}")
+# message(FATAL_ERROR "${CUDA_FOUND}")
 # If it is ALL there, export libraries as a single package
 if(CUDA_FOUND AND NVINFER AND NVINFERPLUGIN AND NVPARSERS AND NVONNXPARSER AND NVONNXPARSERRUNTIME)
   message("TensorRT available!")

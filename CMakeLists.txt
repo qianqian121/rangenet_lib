@@ -12,7 +12,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-g -O3")
 
 ## Use C++11
 set (CMAKE_CXX_STANDARD 11)
-
+set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu")
 # check flags
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -151,10 +151,13 @@ install(
 option(EXAMPLE "Building example" ON)
 
 if(EXAMPLE)
-
+find_package(OpenCV REQUIRED)
+if (NOT OpenCV_FOUND)
+    message(FATAL_ERROR "OpenCV Not Found!")
+endif (NOT OpenCV_FOUND)
   # get opencv (required)
   find_package(OpenCV COMPONENTS core viz)
-  if(OpenCV_FOUND)
+  #if(OpenCV_FOUND)
     message("Building example...")
     message("OpenCV Libs: ${OpenCV_LIBS}")
     set(OpenCV_LIBRARIES ${OpenCV_LIBS})
@@ -174,7 +177,7 @@ if(EXAMPLE)
       infer
       DESTINATION bin/
     )
-  endif()
+  #endif()
 else()
   message("Not building example.")
 endif()

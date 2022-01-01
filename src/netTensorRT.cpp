@@ -348,7 +348,8 @@ std::vector<std::vector<float>> NetTensorRT::infer(const std::vector<float>& sca
  *
  * @return     Exit code.
  */
-void NetTensorRT::verbosity(const bool verbose) {
+void NetTensorRT::verbosity(const bool verbose_) {
+    bool verbose = true;
   std::cout << "Setting verbosity to: " << (verbose ? "true" : "false")
             << std::endl;
 
