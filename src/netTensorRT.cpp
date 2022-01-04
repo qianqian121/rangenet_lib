@@ -124,6 +124,9 @@ std::vector<std::vector<float>> NetTensorRT::doProjection(const std::vector<floa
   float fov_down = _fov_down / 180.0 * M_PI;  // field of view down in radians
   float fov = std::abs(fov_down) + std::abs(fov_up); // get field of view total in radians
 
+  std::cout << "fov_up: " << fov_up;
+  std::cout << ", fov_down: " << fov_down << std::endl;
+
   std::vector<float> ranges;
   std::vector<float> xs;
   std::vector<float> ys;

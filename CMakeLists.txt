@@ -28,6 +28,8 @@ else()
   message(FATAL_ERROR "yaml-cpp NOT FOUND\n")
 endif (yaml-cpp_FOUND)
 
+find_package(PCL REQUIRED COMPONENTS common io)
+
 # get boost (required)
 find_package(Boost COMPONENTS program_options filesystem)
 if(Boost_FOUND)
@@ -36,7 +38,6 @@ if(Boost_FOUND)
 else()
   message(FATAL_ERROR "Boost NOT FOUND\n")
 endif()
-
 
 ####################################
 ## TensorRT specific configuration ##
@@ -163,11 +164,14 @@ endif (NOT OpenCV_FOUND)
     set(OpenCV_LIBRARIES ${OpenCV_LIBS})
     message("OpenCV Headers: ${OpenCV_INCLUDE_DIRS}\n")
 
-    include_directories(${OpenCV_INCLUDE_DIRS})
+    include_directories(${OpenCV_INCLUDE_DIRS}
+            ${PCL_INCLUDE_DIRS}
+            )
     add_executable(infer example/infer.cpp)
     target_link_libraries(infer   rangenet_lib
                                   ${catkin_LIBRARIES}
                                   ${OpenCV_LIBRARIES}
+                                  ${PCL_LIBRARIES}
                                   ${Boost_LIBRARIES}
                                   ${YAML_CPP_LIBRARIES}
                                   ${TENSORRT_LIBRARIES}

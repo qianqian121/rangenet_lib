@@ -4,6 +4,7 @@
  *
  */
 
+#include <cmath>
 
 // opencv stuff
 #include <opencv2/core/core.hpp>
@@ -29,6 +30,11 @@ namespace cl = rangenet::segmentation;
 namespace po = boost::program_options;
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
+
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_cloud.h>
+
+#include "rslidar_point.h"
 
 typedef std::tuple< u_char, u_char, u_char> color;
 
@@ -100,19 +106,35 @@ int main(int argc, const char *argv[]) {
   std::cout << std::setfill('=') << std::setw(80) << "" << std::endl;
   std::cout << "Predicting image: " << scan << std::endl;
 
+  uint32_t num_points;
+  std::vector<float> values;
   // Open a scan
-  std::ifstream in(scan.c_str(), std::ios::binary);
-  if (!in.is_open()) {
+  if (scan.substr(scan.size() - 3) == "pcd") {
+    pcl::PointCloud<RslidarPoint> pcl_cloud;
+    pcl::io::loadPCDFile(scan, pcl_cloud);
+    num_points = pcl_cloud.size();
+    values.resize(num_points * 4);
+    int idx = 0;
+    for (const auto& pcl_point : pcl_cloud) {
+      values[idx++] = pcl_point.x;
+      values[idx++] = pcl_point.y;
+      values[idx++] = pcl_point.z;
+      values[idx++] = std::min(1.0, static_cast<float>(pcl_point.intensity) / 127.0);
+    }
+  } else {
+    std::ifstream in(scan.c_str(), std::ios::binary);
+    if (!in.is_open()) {
       std::cerr << "Could not open the scan!" << std::endl;
       return 1;
+    }
+
+    in.seekg(0, std::ios::end);
+    num_points = in.tellg() / (4 * sizeof(float));
+    in.seekg(0, std::ios::beg);
+
+    values.resize(4 * num_points);
+    in.read((char*)&values[0], 4 * num_points * sizeof(float));
   }
-
-  in.seekg(0, std::ios::end);
-  uint32_t num_points = in.tellg() / (4 * sizeof(float));
-  in.seekg(0, std::ios::beg);
-
-  std::vector<float> values(4 * num_points);
-  in.read((char*)&values[0], 4 * num_points * sizeof(float));
 
   // predict
   std::vector<std::vector<float>> semantic_scan = net->infer(values, num_points);
