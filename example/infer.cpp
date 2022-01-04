@@ -78,7 +78,7 @@ int main(int argc, const char *argv[]) {
     }
     if (vm.count("verbose")) {
       verbose = vm["verbose"].as<bool>();
-      verbose = true;
+//      verbose = true;
       std::cout << "verbose: " << verbose << std::endl;
     } else {
       std::cout << "verbose: " << verbose << ". Using default!" << std::endl;
